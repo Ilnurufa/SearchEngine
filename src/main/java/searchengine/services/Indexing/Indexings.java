@@ -10,6 +10,7 @@ import searchengine.config.SitesList;
 import searchengine.dto.statistics.IndexPageResponse;
 import searchengine.dto.statistics.IndexingResponse;
 import searchengine.dto.statistics.StopIndexingResponse;
+import searchengine.exception.BadRequestException;
 import searchengine.exception.ResourceNotFoundException;
 import searchengine.model.*;
 import searchengine.repository.IndexRepository;
@@ -113,6 +114,10 @@ public class Indexings implements IndexingInt {
     }
 
     public IndexPageResponse pageIndex(String pageUrl) {
+        int count = 0;
+        if (pageUrl.equals("")) {
+            throw new BadRequestException("Не указана страница для индексации");
+        }
         IndexPageResponse indexPageResponse = new IndexPageResponse();
         int code = 0;
         try {
@@ -130,6 +135,9 @@ public class Indexings implements IndexingInt {
                 .replaceAll("www.", "");
         String addressWithoutProtocol = siteAddress2.substring(siteAddress2.indexOf("//") + 2);
         for (Site site : sitesList) {
+            if(pageUrl.contains(site.getUrl())){
+                count++;
+            }
             String siteAddressWithoutProtocol = site.getUrl().substring(0, site.getUrl().indexOf("/", 8))
                     .replaceAll("www.", "");
             String temps2 = siteAddressWithoutProtocol.substring(siteAddressWithoutProtocol.indexOf("//") + 2);
@@ -139,7 +147,10 @@ public class Indexings implements IndexingInt {
                 indexPageResponse.setResult(true);
                 break;
             }
-
+        }
+        if(count == 0){
+            throw new ResourceNotFoundException("Данная страница находится за пределами сайтов, \n" +
+                    "указанных в конфигурационном файле\n");
         }
         return indexPageResponse;
     }

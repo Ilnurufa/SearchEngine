@@ -42,32 +42,15 @@ public class ApiController {
     @PostMapping("/indexPage")
     public ResponseEntity<IndexPageResponse> indexOnePage(OnePageIndexing onePageIndexing) {
         IndexPageResponse indexPageResponse;
-        if (onePageIndexing.getUrl().equals("")) {
-            throw new BadRequestException("Не указана страница для индексации");
-        }
         indexPageResponse = indexingInt.pageIndex(onePageIndexing.getUrl());
-        if (indexPageResponse.isResult()) {
-            return ResponseEntity.ok(indexPageResponse);
-        } else {
-            throw new ResourceNotFoundException("Данная страница находится за пределами сайтов, \n" +
-                    "указанных в конфигурационном файле\n");
-        }
+        return ResponseEntity.ok(indexPageResponse);
     }
 
     @GetMapping("/search")
     public ResponseEntity<?> searchPage(SearchRequest searchRequest) {
         SearchResult searchResult;
-        if (searchRequest.getQuery().equals("")) {
-            throw new BadRequestException("Задан пустой поисковый запрос!");
-        }
         searchResult = searchService.search(searchRequest.getQuery(), searchRequest.getSite(), searchRequest.getLimit(), searchRequest.getOffset());
-        if (searchResult.isResult()) {
             return ResponseEntity.ok(searchResult);
-        } else {
-            throw new ResourceNotFoundException("Поисковый запрос не дал результатоввввв!");
-
-        }
-
     }
 
 }

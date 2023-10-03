@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import searchengine.dto.statistics.SearchData;
 import searchengine.dto.statistics.SearchResult;
+import searchengine.exception.BadRequestException;
+import searchengine.exception.ResourceNotFoundException;
 import searchengine.model.*;
 import searchengine.repository.IndexRepository;
 import searchengine.repository.LemmaRepository;
@@ -45,6 +47,9 @@ public class SearchServiceImpl implements SearchService {
             List<String> lemmaForSearch = lemmaIndex.getLemma(searchRequest);
             lemmasFromSearchRequest = new HashSet<>(lemmaForSearch);
             HashSet<Integer> listSiteIdWhereLemmaFound = lemmaRepository.siteIdWhereLemmaFound(lemmasFromSearchRequest);
+            if (listSiteIdWhereLemmaFound.size() == 0) {
+                throw new ResourceNotFoundException("Поисковый запрос не дал результатов!");
+            }
             if (site == null) {
                 for (int siteId : listSiteIdWhereLemmaFound) {
                     finalFoundPages.addAll(finalFoundPage(siteId));
@@ -64,6 +69,9 @@ public class SearchServiceImpl implements SearchService {
             searchResult.setData(listData);
             searchResult.setResult(true);
             searchResult.setCount(finalFoundPages.size());
+        }
+        else {
+            throw new BadRequestException("Задан пустой поисковый запрос!");
         }
         return searchResult;
     }
@@ -147,22 +155,20 @@ public class SearchServiceImpl implements SearchService {
                 finalContent = contentForSnippetData(finalSnippet, finalContent, element);
             }
         }
+        for (String finalSnippet : set1) {
+            String regWord = "\\b" + finalSnippet + "\\b";
+            finalContent = finalContent.replaceAll(regWord, "<b>" + finalSnippet + "</b>");
+        }
         return finalContent;
     }
 
     public String contentForSnippetData(String finalSnippet, String finalContent, Element element) {
-        if (finalContent.contains("<b>" + finalSnippet + "</b>")) {
-        } else if (finalContent.contains(finalSnippet)) {
-            finalContent = finalContent.replaceAll(finalSnippet, "<b>" + finalSnippet + "</b>");
-        } else {
             String[] textArray = element.text().split("(\\.+)");
-            for (String temp : textArray) {
-                if (temp.contains(finalSnippet)) {
-                    finalContent = finalContent.concat(".." + temp + "..");
-                    finalContent = finalContent.replaceAll(finalSnippet, "<b>" + finalSnippet + "</b>");
+            for (String partOfTheText : textArray) {
+                if (partOfTheText.contains(finalSnippet) && !finalContent.contains(partOfTheText)) {
+                    finalContent = finalContent.concat(".." + partOfTheText + "..");
                 }
             }
-        }
         return finalContent;
     }
 
