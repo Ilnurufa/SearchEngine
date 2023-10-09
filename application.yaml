@@ -19,7 +19,7 @@ spring:
 
 indexing-settings:
   sites:
-    - url: http://www.playback.ru/
+    - url: https://www.playback.ru/
       name: PlayBack.Ru
     - url: https://skillbox.ru/
       name: Skillbox

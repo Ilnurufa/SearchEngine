@@ -53,16 +53,10 @@ public class IndexingsOnePage {
             addPage.setContent(content);
             addPage.setSite(updatePortal);
             pageRepository.save(addPage);
-            int temp4 = 1;
             new LemmaIndex(updatePortal, addPage, document, lemmaRepository, indexRepository, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void addOnePage(int siteId) {
-
-
     }
 
 }

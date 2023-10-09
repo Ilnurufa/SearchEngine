@@ -11,9 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-//@Table(name = "`index`")
-//@SQLInsert(sql = "INSERT INTO `index`(lemma_id, page_id, `rank`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `rank` = `rank` + 1" )
-@Table(name = "`index`", uniqueConstraints = { @UniqueConstraint(name = "UniqueLemmaSiteId", columnNames = { "page_id", "lemma_id" }) })
+@Table(name = "`index`", uniqueConstraints = {@UniqueConstraint(name = "UniqueLemmaSiteId", columnNames = {"page_id", "lemma_id"})})
 public class Indexes {
 
     @Id

@@ -1,9 +1,7 @@
 package searchengine.model;
 
-import org.apache.catalina.LifecycleState;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +27,6 @@ public class Portal {
     private List<Page> pages;
 
     @OneToMany(mappedBy = "site", cascade = CascadeType.REMOVE, orphanRemoval = true)
-//    @OneToMany(mappedBy = "site")
     private List<Lemma> lemmas;
 
     public int getId() {

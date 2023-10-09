@@ -41,7 +41,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         total.setSites(portals.size());
         total.setIndexing(true);
         List<DetailedStatisticsItem> detailed = new ArrayList<>();
-        for(Portal portal : portals){
+        for (Portal portal : portals) {
             DetailedStatisticsItem item = new DetailedStatisticsItem();
             item.setName(portal.getName());
             item.setUrl(portal.getUrl());

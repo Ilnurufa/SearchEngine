@@ -24,7 +24,6 @@ public class Page {
 
     private String path;
 
-    //@OneToMany(mappedBy = "page")
     @OneToMany(mappedBy = "page", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Indexes> indexess;
 

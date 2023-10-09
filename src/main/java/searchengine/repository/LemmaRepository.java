@@ -15,11 +15,6 @@ import java.util.HashSet;
 @Repository
 public interface LemmaRepository extends CrudRepository<Lemma, Integer> {
 
-    @Modifying
-    @Query(value = "INSERT INTO lemma(frequency, lemma, site_id) VALUES (1,'интернет',1) ON DUPLICATE KEY UPDATE `frequency` = `frequency` + 1", nativeQuery = true)
-    void insertLemma(String result);
-
-
     Lemma findByLemmaAndSiteId(String lemma, int siteId);
 
     @Modifying
@@ -32,13 +27,10 @@ public interface LemmaRepository extends CrudRepository<Lemma, Integer> {
     int countAllBySiteId(int siteId);
 
     @Query(value = "SELECT id FROM lemma WHERE lemma IN :lemmaSearch AND site_id = :siteId ORDER BY frequency ASC", nativeQuery = true)
-    ArrayList<Integer> lemmaByAsc(@Param("lemmaSearch")HashSet<String> lemmaSearch, int siteId);
-
-    @Query(value = "SELECT id FROM lemma WHERE lemma IN :lemmaSearch ORDER BY frequency ASC", nativeQuery = true)
-    ArrayList<Integer> lemmaByAskWithoutSiteId(@Param("lemmaSearch")HashSet<String> lemmaSearch);
+    ArrayList<Integer> lemmaByAsc(@Param("lemmaSearch") HashSet<String> lemmaSearch, int siteId);
 
     @Query(value = "SELECT site_id FROM lemma WHERE lemma IN :lemmaSearch ORDER BY frequency ASC", nativeQuery = true)
-    HashSet<Integer> siteIdWhereLemmaFound(@Param("lemmaSearch")HashSet<String> lemmaSearch);
+    HashSet<Integer> siteIdWhereLemmaFound(@Param("lemmaSearch") HashSet<String> lemmaSearch);
 
 
 }

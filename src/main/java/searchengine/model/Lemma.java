@@ -12,9 +12,8 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@SQLInsert(sql = "INSERT INTO lemma(frequency, lemma, site_id) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE frequency = frequency + 1" )
-@Table(name = "lemma", uniqueConstraints = { @UniqueConstraint(name = "UniqueLemmaSiteId", columnNames = { "site_id", "lemma" }) })
-//@Table(name = "lemma")
+@SQLInsert(sql = "INSERT INTO lemma(frequency, lemma, site_id) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE frequency = frequency + 1")
+@Table(name = "lemma", uniqueConstraints = {@UniqueConstraint(name = "UniqueLemmaSiteId", columnNames = {"site_id", "lemma"})})
 public class Lemma {
 
     @Id

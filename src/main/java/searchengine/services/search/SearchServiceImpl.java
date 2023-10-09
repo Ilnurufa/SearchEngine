@@ -44,7 +44,7 @@ public class SearchServiceImpl implements SearchService {
         List<Object[]> finalFoundPages = new ArrayList<>();
         SearchResult searchResult = new SearchResult();
         if (!searchRequest.equals("")) {
-            List<String> lemmaForSearch = lemmaIndex.getLemma(searchRequest);
+            List<String> lemmaForSearch = LemmaIndex.getLemma(searchRequest);
             lemmasFromSearchRequest = new HashSet<>(lemmaForSearch);
             HashSet<Integer> listSiteIdWhereLemmaFound = lemmaRepository.siteIdWhereLemmaFound(lemmasFromSearchRequest);
             if (listSiteIdWhereLemmaFound.size() == 0) {
@@ -69,8 +69,7 @@ public class SearchServiceImpl implements SearchService {
             searchResult.setData(listData);
             searchResult.setResult(true);
             searchResult.setCount(finalFoundPages.size());
-        }
-        else {
+        } else {
             throw new BadRequestException("Задан пустой поисковый запрос!");
         }
         return searchResult;
@@ -163,12 +162,12 @@ public class SearchServiceImpl implements SearchService {
     }
 
     public String contentForSnippetData(String finalSnippet, String finalContent, Element element) {
-            String[] textArray = element.text().split("(\\.+)");
-            for (String partOfTheText : textArray) {
-                if (partOfTheText.contains(finalSnippet) && !finalContent.contains(partOfTheText)) {
-                    finalContent = finalContent.concat(".." + partOfTheText + "..");
-                }
+        String[] textArray = element.text().split("(\\.+)");
+        for (String partOfTheText : textArray) {
+            if (partOfTheText.contains(finalSnippet) && !finalContent.contains(partOfTheText)) {
+                finalContent = finalContent.concat(".." + partOfTheText + "..");
             }
+        }
         return finalContent;
     }
 

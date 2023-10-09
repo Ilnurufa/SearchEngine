@@ -20,12 +20,9 @@ public class LinksTask extends RecursiveAction {
 
     private ConcurrentLinkedDeque<String> deque = new ConcurrentLinkedDeque<>();
     private static final CopyOnWriteArraySet<String> PASSED = new CopyOnWriteArraySet<>();
-    private boolean flagMainLinkOrPage = true; //флаг нужен только чтобы записать инфу с первой страницы сайта в таблицу page, после записи меняется на 1
-    //private  int siteId;
+    private boolean flagMainLinkOrPage = true;
     private String siteUrl;
     private String newSiteAddress;
-    //private Site site;
-    //private Portal portal;
     private static PageRepository pageRepository;
     private static SiteRepository siteRepository;
     private static LemmaRepository lemmaRepository;
@@ -40,14 +37,9 @@ public class LinksTask extends RecursiveAction {
 
     public LinksTask(String siteUrl, PageRepository pageRepository, SiteRepository siteRepository,
                      LemmaRepository lemmaRepository, IndexRepository indexRepository, boolean flagMainLinkOrPage, boolean stopIndexFlag) {
-        //this.siteId = id;
-        //this.portal = portal;
-        //this.site = site;
-
         this.siteUrl = siteUrl;
         LinksTask.pageRepository = pageRepository;
         LinksTask.siteRepository = siteRepository;
-        //this.flagMainLinkOrPage = flagMainLinkOrPage;
         LinksTask.stopIndexFlag = stopIndexFlag;
         LinksTask.lemmaRepository = lemmaRepository;
         LinksTask.indexRepository = indexRepository;
@@ -60,11 +52,8 @@ public class LinksTask extends RecursiveAction {
     @Override
     protected void compute() {
         if (stopIndexFlag) {
-            int ttt = 199;
-            //getLinks(flagMainLinkOrPage == true ? portal.getUrl() : siteUrl); //если 0 то берет адрес главной страницы если нет то из списка из deque
             getLinks(siteUrl);
             List<LinksTask> taskList = new ArrayList<>();
-            int yuiy = 78;
             while (!(deque.peek() == null)) {
                 LinksTask task = new LinksTask(deque.pollFirst());
                 task.fork();
@@ -82,7 +71,6 @@ public class LinksTask extends RecursiveAction {
         String path;
         int code;
         String content;
-
         try {
             try {
                 Thread.sleep(100);
@@ -122,11 +110,9 @@ public class LinksTask extends RecursiveAction {
             }
             content = document.toString().replace("'", "\\'");
             code = response.statusCode();
-            int t = 90;
             if (!newSiteAddress.equals(url) || flagMainLinkOrPage == true) {
                 recordRepository(path, content, code, document);
             }
-            //flagMainLinkOrPage = false;
         } catch (Exception e) {
             e.printStackTrace();
             Thread.currentThread().interrupt();
@@ -134,26 +120,20 @@ public class LinksTask extends RecursiveAction {
     }
 
     public synchronized void recordRepository(String path, String content, int code, Document document) {
-        Portal portal1 = new Portal();
-        portal1 = siteRepository.findByUrl(newSiteAddress);
+        Portal portal = siteRepository.findByUrl(newSiteAddress);
         Page page = new Page();
         page.setPath(path);
         page.setCode(code);
         page.setContent(content);
-        page.setSite(portal1);
-        int u = 567;
+        page.setSite(portal);
         pageRepository.save(page);
-        Optional<Portal> optionalPage = siteRepository.findById(portal1.getId());
-        optionalPage.ifPresent(portal -> {
+        Optional<Portal> optionalPage = siteRepository.findById(portal.getId());
+        optionalPage.ifPresent(portal1 -> {
             portal.setStatusTime(new Date());
             siteRepository.save(portal);
         });
-        new LemmaIndex(portal1, page, document, lemmaRepository, indexRepository, false);
+        new LemmaIndex(portal, page, document, lemmaRepository, indexRepository, false);
     }
-
-//    public static void setFlagMainLinkOrPage(boolean flagMainLinkOrPage) {
-//        LinksTask.flagMainLinkOrPage = flagMainLinkOrPage;
-//    }
 
     public static void setStopIndexFlag(boolean stopIndexFlag) {
         LinksTask.stopIndexFlag = stopIndexFlag;

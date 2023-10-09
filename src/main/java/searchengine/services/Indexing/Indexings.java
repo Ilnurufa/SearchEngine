@@ -45,7 +45,6 @@ public class Indexings implements IndexingInt {
 
     private final SitesList sites;
 
-    private Thread threadParser = new Thread();
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
     private Future future;
     private ForkJoinPool forkJoinPool;
@@ -88,7 +87,7 @@ public class Indexings implements IndexingInt {
 
     public StopIndexingResponse stopIndexing() {
         StopIndexingResponse stopIndexingResponse = new StopIndexingResponse();
-      try {
+        try {
             if (future.isDone()) {
                 LinksTask.setStopIndexFlag(false);
                 LinksTask.clearPASSED();
@@ -135,20 +134,20 @@ public class Indexings implements IndexingInt {
                 .replaceAll("www.", "");
         String addressWithoutProtocol = siteAddress2.substring(siteAddress2.indexOf("//") + 2);
         for (Site site : sitesList) {
-            if(pageUrl.contains(site.getUrl())){
+            if (pageUrl.contains(site.getUrl())) {
                 count++;
             }
             String siteAddressWithoutProtocol = site.getUrl().substring(0, site.getUrl().indexOf("/", 8))
                     .replaceAll("www.", "");
-            String temps2 = siteAddressWithoutProtocol.substring(siteAddressWithoutProtocol.indexOf("//") + 2);
-            if (temps2.equals(addressWithoutProtocol)) {
+            String siteAddress = siteAddressWithoutProtocol.substring(siteAddressWithoutProtocol.indexOf("//") + 2);
+            if (siteAddress.equals(addressWithoutProtocol)) {
                 Portal updatePortal = siteRepository.findByUrl(site.getUrl());
-                executorService.execute(() -> StartParsOnePage(pageUrl, updatePortal));
+                StartParsOnePage(pageUrl, updatePortal);
                 indexPageResponse.setResult(true);
                 break;
             }
         }
-        if(count == 0){
+        if (count == 0) {
             throw new ResourceNotFoundException("Данная страница находится за пределами сайтов, \n" +
                     "указанных в конфигурационном файле\n");
         }

@@ -22,7 +22,7 @@ public class LemmaIndex {
     private static LemmaRepository lemmaRepository;
     private static IndexRepository indexRepository;
     public static List<String> dayOfWeek = Arrays.asList("пн", "вт", "ср", "чт", "пт", "сб", "вск", "гб", "вс");
-    private static boolean flagAddOnePage = false; // Добавляется ли отдельная страница или идет индексация полная
+    private static boolean flagAddOnePage = false;
 
     public LemmaIndex(Portal portal, Page page, Document document, LemmaRepository lemmaRepository, IndexRepository indexRepository,
                       boolean flagAddOnePage) {
@@ -48,7 +48,7 @@ public class LemmaIndex {
                     .replaceAll("[^а-яА-Яa-zA-Z\\s]", " ")
                     .replaceAll("(\\b[a-zA-Zа-яА-Я]{1,1}\\b)|(nbsp)", "")
                     .replaceAll("\\s+", " ")
-                    .trim(); // .replaceAll("[\\n]", " ")
+                    .trim();
             String[] wordsArray = textTemp.split(" ");
             for (String elm : wordsArray) {
                 if (!elm.equals("") && elm.matches("[а-яА-Я]*")) {
@@ -119,13 +119,12 @@ public class LemmaIndex {
                 lemmaRepository.save(lemma);
             }
         } else {
-            // Добавление\обновление отдельной страницы
             for (String word : lemmaList) {
                 lemmas.put(word, (lemmas.containsKey(word)) ? lemmas.get(word) + 1 : 1);
-                Lemma lemma1 = lemmaRepository.findByLemmaAndSiteId(word, portal.getId());
-                if (lemma1 != null) {
-                    lemma1.setFrequency(lemma1.getFrequency() + 1);
-                    lemmaRepository.save(lemma1);
+                Lemma lemmaFromTheQuery = lemmaRepository.findByLemmaAndSiteId(word, portal.getId());
+                if (lemmaFromTheQuery != null) {
+                    lemmaFromTheQuery.setFrequency(lemmaFromTheQuery.getFrequency() + 1);
+                    lemmaRepository.save(lemmaFromTheQuery);
                 } else {
                     Lemma lemma = new Lemma();
                     lemma.setLemma(word);
